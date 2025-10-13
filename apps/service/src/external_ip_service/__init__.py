@@ -1,6 +1,8 @@
-from redis import Redis
 from time import sleep, time
+
 from loguru import logger
+from redis import Redis
+
 # from sys import stdout
 
 
