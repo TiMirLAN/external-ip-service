@@ -7,7 +7,10 @@ authors = [
     { name = "Tim Mironov", email = "timirlan666@gmail.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "loguru>=0.7.3",
+    "redis>=6.4.0",
+]
 
 [project.scripts]
 external-ip-service = "external_ip_service:main"
