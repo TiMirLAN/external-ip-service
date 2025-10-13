@@ -13,3 +13,11 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = ["pre-commit>=4.3.0", "ruff>=0.14.0"]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["F", "E", "I", "T", "ANN"]
+extend-select = ["E501", "E722", "E741"]
+ignore = ["ANN401", "ANN002", "ANN003"]
