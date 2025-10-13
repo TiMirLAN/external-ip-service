@@ -1,0 +1,8 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: python
+layer: application
+
+tasks:
+  run.dev:
+    command: uv run external-ip-service
