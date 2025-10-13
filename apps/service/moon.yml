@@ -6,3 +6,6 @@ layer: application
 tasks:
   run.dev:
     command: uv run external-ip-service
+
+  format:
+    command: uv run pre-commit run -c ./.pre-commit-config.yaml

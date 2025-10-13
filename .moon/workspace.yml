@@ -6,3 +6,8 @@ $schema: "./cache/schemas/workspace.json"
 projects:
   service: apps/service
   polybar-client: apps/polybar_client
+
+vcs:
+  hooks:
+    pre-commit:
+      - "moon run :lint :format --affected --status=staged"
