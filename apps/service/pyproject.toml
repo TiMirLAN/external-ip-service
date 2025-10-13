@@ -5,7 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Tim Mironov", email = "timirlan666@gmail.com" }]
 requires-python = ">=3.14"
-dependencies = ["loguru>=0.7.3", "redis>=6.4.0"]
+dependencies = [
+    "loguru>=0.7.3",
+    "redis-connector",
+]
 
 [project.scripts]
 external-ip-service = "external_ip_service:main"
@@ -24,3 +27,6 @@ line-length = 88
 select = ["F", "E", "I", "T", "ANN"]
 extend-select = ["E501", "E722", "E741"]
 ignore = ["ANN401", "ANN002", "ANN003"]
+
+[tool.uv.sources]
+redis-connector = { path = "../../libs/redis_connector", editable = true }

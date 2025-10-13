@@ -1,23 +1,21 @@
-from time import sleep, time
+from time import sleep
 
 from loguru import logger
-from redis import Redis
-
-# from sys import stdout
+from redis_connector import RedisConnector
 
 
 def main() -> None:
-    # logger.add(stdout, format="{time} [{level}] {message}", level="INFO")
-
     logger.info("Connecting redis server...")
-    redis = Redis()
+    connector = RedisConnector()
+    connector.connect()
 
     logger.info("Start service")
     while True:
         try:
-            redis.set("time", str(int(time())))
-            logger.info("Time was updated")
+            ip_info = dict(ip="0.0.0.0")
+            connector.setIpInfo(ip_info)
+            logger.info(f"IP {ip_info['ip']} was updated")
             sleep(10)
         except KeyboardInterrupt:
-            logger.info("Exit")
+            logger.info("Exit by keyboard interrupt")
             return 0
