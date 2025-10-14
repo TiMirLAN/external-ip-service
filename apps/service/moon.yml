@@ -12,3 +12,6 @@ tasks:
 
   format:
     command: uv run pre-commit run -c ./.pre-commit-config.yaml
+
+  build:
+    command: uv build
