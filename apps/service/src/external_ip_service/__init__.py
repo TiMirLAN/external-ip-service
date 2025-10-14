@@ -22,7 +22,7 @@ def get_external_ip_data() -> dict:
     attempts = 0
     while True:
         logger.info(
-            f"\nUpdating ip...{' attempt' + str(attempts) if attempts > 0 else ''}"
+            f"Updating ip...{' attempt' + str(attempts) if attempts > 0 else ''}"
         )
         try:
             connection = HTTPConnection("ipinfo.io", timeout=IP_REQUEST_TIMEOUT)
