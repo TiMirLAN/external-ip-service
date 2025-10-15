@@ -1,11 +1,11 @@
 [project]
 name = "redis-connector"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Tim Mironov", email = "timirlan666@gmail.com" }]
 requires-python = ">=3.14"
-dependencies = ["redis>=6.4.0"]
+dependencies = ["pydantic>=2.12.2", "redis>=6.4.0"]
 
 [build-system]
 requires = ["uv_build>=0.8.22,<0.9.0"]

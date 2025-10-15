@@ -1,11 +1,24 @@
-from json import dumps, loads
-from typing import Optional, Union
+from typing import Optional
 
+from pydantic import BaseModel
 from redis import Redis
 
 __all__ = ["RedisConnector"]
 
-IPInfo = Union[object, str]
+
+class ApiIPInfoIOLiteMeResponse(BaseModel):
+    ip: str
+    asn: str
+    as_name: str
+    as_domain: str
+    country: str
+    continent_code: str
+    continent: str
+
+
+class ConnectorState(BaseModel):
+    message: str
+    ip_data: Optional[ApiIPInfoIOLiteMeResponse] = None
 
 
 class RedisConnector:
@@ -16,11 +29,11 @@ class RedisConnector:
     def connect(self) -> None:
         self.connection = Redis()
 
-    def setIpInfo(self, ip_information: Optional[IPInfo]) -> None:
-        self.connection.set(self.key, dumps(ip_information))
+    def setIpInfo(self, state: ConnectorState) -> None:
+        self.connection.set(self.key, state.model_dump(mode="json"))
 
-    def getIpInfo(self) -> Optional[IPInfo]:
+    def getIpInfo(self) -> ConnectorState:
         value = self.connection.get(self.key)
         if not value:
-            return None
-        return loads(value)
+            return ConnectorState(message="No data found")
+        return ConnectorState.model_validate_json(value)

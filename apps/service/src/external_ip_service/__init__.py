@@ -1,12 +1,13 @@
 from hashlib import sha256
 from http.client import HTTPConnection
-from json import loads
 from socket import timeout
 from subprocess import check_output
 from time import sleep, time
 
 from loguru import logger
-from redis_connector import RedisConnector
+from redis_connector import ApiIPInfoIOLiteMeResponse, ConnectorState, RedisConnector
+
+from .settings import settings
 
 ROUTES_TIMEOUT = 3
 IP_REQUEST_TIMEOUT = 5
@@ -18,28 +19,29 @@ def build_routes_hash() -> str:
     return sha256(output.encode()).hexdigest()
 
 
-def get_external_ip_data() -> dict:
-    attempts = 0
+def fetch_external_ip_data(connector: RedisConnector) -> dict:
+    attempts = 1
     while True:
         logger.info(
             f"Updating ip...{' attempt' + str(attempts) if attempts > 0 else ''}"
         )
         try:
-            connection = HTTPConnection("ipinfo.io", timeout=IP_REQUEST_TIMEOUT)
-            connection.request("GET", "/json")
+            connector.setIpInfo(ConnectorState(message=f"[{attempts}] Updating..."))
+            connection = HTTPConnection("api.ipinfo.io", timeout=IP_REQUEST_TIMEOUT)
+            connection.request("GET", f"/lite/me?token={settings.ipinfo_token}")
             response = connection.getresponse()
             data = response.read()
-            return loads(data)
+            ip_data = ApiIPInfoIOLiteMeResponse.model_validate_json(data)
+            logger.info(
+                f"New ip info: {ip_data.ip} {ip_data.country} {ip_data.as_name}"
+            )
+            connector.setIpInfo(ConnectorState(message="Fetched!", ip_data=ip_data))
+            return
         except timeout:
             attempts += 1
         except Exception:
+            connector.setIpInfo(ConnectorState(message="Error!"))
             logger.error("\nError updating ip")
-
-
-def update_ip_info(connector: RedisConnector) -> None:
-    ip_info = get_external_ip_data()
-    logger.info(f"New ip info: {ip_info['ip']} {ip_info['region']} {ip_info['org']}")
-    connector.setIpInfo(ip_info)
 
 
 def main() -> None:
@@ -50,7 +52,7 @@ def main() -> None:
     logger.info("Start service")
 
     routes_hash = build_routes_hash()
-    connector.setIpInfo(get_external_ip_data())
+    fetch_external_ip_data(connector)
     last_update_time = time()
 
     while True:
@@ -63,13 +65,14 @@ def main() -> None:
             if new_route_hash != routes_hash:
                 routes_hash = new_route_hash
                 logger.info("Route table changed. Updating IP info....")
-                update_ip_info(connector)
+                fetch_external_ip_data(connector)
                 last_update_time = time()
             else:
                 if time() - last_update_time > IP_CHECK_TIMEOUT:
-                    update_ip_info(connector)
+                    fetch_external_ip_data(connector)
                     last_update_time = time()
             sleep(ROUTES_TIMEOUT)
         except KeyboardInterrupt:
+            connector.setIpInfo(ConnectorState(message="Service is down"))
             logger.info("Exit by keyboard interrupt")
             return 0

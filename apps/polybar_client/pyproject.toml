@@ -1,6 +1,6 @@
 [project]
 name = "polybar-client"
-version = "0.1.1"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Tim Mironov", email = "timirlan666@gmail.com" }]

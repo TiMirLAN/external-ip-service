@@ -1,14 +1,11 @@
 [project]
 name = "external-ip-service"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Tim Mironov", email = "timirlan666@gmail.com" }]
-requires-python = ">=3.14"
-dependencies = [
-    "loguru>=0.7.3",
-    "redis-connector",
-]
+requires-python = ">=3.14,<4.0"
+dependencies = ["loguru>=0.7.3", "redis-connector", "pydantic-settings (>=2.11.0,<3.0.0)"]
 
 [project.scripts]
 external-ip-service = "external_ip_service:main"
