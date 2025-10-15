@@ -30,7 +30,7 @@ class RedisConnector:
         self.connection = Redis()
 
     def setIpInfo(self, state: ConnectorState) -> None:
-        self.connection.set(self.key, state.model_dump(mode="json"))
+        self.connection.set(self.key, state.model_dump_json())
 
     def getIpInfo(self) -> ConnectorState:
         value = self.connection.get(self.key)
