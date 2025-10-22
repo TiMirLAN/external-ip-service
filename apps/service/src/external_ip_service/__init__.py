@@ -42,7 +42,7 @@ def fetch_external_ip_data(connector: RedisConnector) -> dict:
             logger.warning("Request timeout")
         except Exception:
             connector.setIpInfo(ConnectorState(message="Error!"))
-            logger.error("\nError updating ip")
+            logger.error("Error updating ip")
 
 
 def main() -> None:
