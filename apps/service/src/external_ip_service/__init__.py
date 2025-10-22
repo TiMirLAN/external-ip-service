@@ -20,10 +20,11 @@ def build_routes_hash() -> str:
 
 
 def fetch_external_ip_data(connector: RedisConnector) -> dict:
-    attempts = 1
+    attempts = 0
     while True:
+        attempts += 1
         logger.info(
-            f"Updating ip...{' attempt' + str(attempts) if attempts > 0 else ''}"
+            f"Updating ip...{' attempt ' + str(attempts) if attempts > 0 else ''}"
         )
         try:
             connector.setIpInfo(ConnectorState(message=f"[{attempts}] Updating..."))
@@ -38,7 +39,7 @@ def fetch_external_ip_data(connector: RedisConnector) -> dict:
             connector.setIpInfo(ConnectorState(message="Fetched!", ip_data=ip_data))
             return
         except timeout:
-            attempts += 1
+            logger.warning("Request timeout")
         except Exception:
             connector.setIpInfo(ConnectorState(message="Error!"))
             logger.error("\nError updating ip")
