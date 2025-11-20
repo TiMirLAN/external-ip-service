@@ -1,0 +1,15 @@
+[project]
+name = "extip"
+version = "0.1.0"
+description = "CLI service for polybar to show external ip"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "click>=8.3.1",
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "pydantic-settings>=2.12.0",
+]
+
+[project.scripts]
+ext-ip = "main:main"
