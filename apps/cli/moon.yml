@@ -17,5 +17,8 @@ tasks:
   format:
     command: uv run pre-commit run -c ./.pre-commit-config.yaml
 
+  test:
+    command: uv run pytest
+
   build:
     command: uv build
