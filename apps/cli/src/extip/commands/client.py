@@ -3,7 +3,6 @@ from pathlib import Path
 from sys import stdout
 from typing import Any
 
-from _pytest._py.path import Stat
 import click
 from py_template_engine import TemplateEngine
 
