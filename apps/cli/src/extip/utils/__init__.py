@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ConnectTimeout, codes
 
 
 @dataclass
@@ -15,15 +15,27 @@ class SimpleIpInfo:
     continent: str
 
 
+class IpInfoClientError(Exception): ...
+
+
+class IpInfoClientTimeout(Exception): ...
+
+
 class IpInfoClient:
-    def __init__(self, token: str) -> None:
-        self.client = AsyncClient()
+    def __init__(self, token: str, timeout: float = 5.0) -> None:
+        self.client = AsyncClient(timeout=timeout)
         self.params = dict(token=token)
 
     async def fetch_simple_data(self) -> SimpleIpInfo:
         async with self.client:
-            response = await self.client.get(
-                "https://api.ipinfo.io/lite/me", params=self.params
-            )
-            ip_data: dict[str, str] = response.json()
-            return SimpleIpInfo(**ip_data)
+            try:
+                response = await self.client.get(
+                    "https://api.ipinfo.io/lite/me", params=self.params
+                )
+                if response.status_code != codes.OK:
+                    raise IpInfoClientError()
+
+                ip_data: dict[str, str] = response.json()
+                return SimpleIpInfo(**ip_data)
+            except ConnectTimeout as e:
+                raise IpInfoClientTimeout from e

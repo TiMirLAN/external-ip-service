@@ -1,14 +1,31 @@
 import asyncio
+from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import click
 from loguru import logger
 
+from extip.utils import (
+    IpInfoClient,
+    IpInfoClientError,
+    IpInfoClientTimeout,
+    SimpleIpInfo,
+)
+
+
+class Status(Enum):
+    READY = "ready"
+    ERROR = "error"
+    UPDATING = "updating"
+
 
 class Service:
-    def __init__(self, socket_path: Path) -> None:
+    def __init__(self, socket_path: Path, token: Optional[str]) -> None:
         self.socket_path = socket_path
+        self.ipinfo_client = IpInfoClient(token)
+        self.status: Status = Status.UPDATING
+        self.info: Optional[SimpleIpInfo] = None
 
     async def client_handler(
         self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
@@ -29,7 +46,14 @@ class Service:
         async with server:
             await server.serve_forever()
 
-    async def run_periodic_update(self) -> None: ...
+    async def run_periodic_update(self) -> None:
+        while True:
+            try:
+                self.status = Status.UPDATING
+                self.info = await self.ipinfo_client.fetch_simple_data()
+                self.status = Status.READY
+            except (IpInfoClientError, IpInfoClientTimeout):
+                self.status = Status.ERROR
 
     async def run_iptables_watcher(self) -> None: ...
 
@@ -41,9 +65,9 @@ class Service:
         )
 
     @classmethod
-    def start(cls, socket_path: Path) -> None:
+    def start(cls, socket_path: Path, token: str) -> None:
         try:
-            service = cls(socket_path)
+            service = cls(socket_path, token)
             asyncio.run(service.run())
         except KeyboardInterrupt:
             logger.info("Service stopped by keyboard interrupt")
@@ -56,8 +80,9 @@ class Service:
     default="INFO",
     type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
 )
+@click.option("--token", "-t", type=str, help="The 'ipinfo.com' access token.")
 @click.pass_context
-def service(ctx: dict[str | Any], log_level: str) -> None:
+def service(ctx: dict[str | Any], log_level: str, token: Optional[str]) -> None:
     """Start the service"""
     # logger.level(log_level)
-    Service.start(socket_path=ctx.obj["SOCKET_PATH"])
+    Service.start(socket_path=ctx.obj["SOCKET_PATH"], token=token)
