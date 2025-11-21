@@ -21,6 +21,7 @@ class IpInfoClientTimeout(Exception): ...
 
 
 class IpInfoClient:
+    # @TODO Move to services
     def __init__(self, token: str, timeout: float = 5.0) -> None:
         # self.client = AsyncClient(timeout=timeout)
         self.timeout = timeout
