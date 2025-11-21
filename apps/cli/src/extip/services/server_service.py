@@ -6,6 +6,7 @@ from typing import Optional
 from loguru import logger
 from pydantic import BaseModel
 
+from extip.services.iptables import IptablesService
 from extip.utils import (
     IpInfoClient,
     IpInfoClientError,
@@ -32,6 +33,8 @@ class Service:
         self.status: Status = Status.UPDATING
         self.info: Optional[SimpleIpInfo] = None
         self.updating_timeout = 5.0
+        self.iptables = IptablesService()
+        self.iptables_timeout = 2.0
 
     @property
     def state(self) -> ServiceState:
@@ -64,20 +67,28 @@ class Service:
         async with server:
             await server.serve_forever()
 
+    async def update_ip_info(self) -> None:
+        try:
+            logger.debug("Updating ip...")
+            self.status = Status.UPDATING
+            self.info = await self.ipinfo_client.fetch_simple_data()
+            self.status = Status.READY
+            logger.debug(f"IP fetched {self.info.ip} {self.info.as_domain}")
+        except (IpInfoClientError, IpInfoClientTimeout) as e:
+            self.status = Status.ERROR
+            logger.error(f"Error '{e}' fetching ip...")
+
     async def run_periodic_update(self) -> None:
         while True:
-            try:
-                logger.debug("Updating ip...")
-                self.status = Status.UPDATING
-                self.info = await self.ipinfo_client.fetch_simple_data()
-                self.status = Status.READY
-                logger.debug(f"IP fetched {self.info.ip} {self.info.as_domain}")
-            except (IpInfoClientError, IpInfoClientTimeout) as e:
-                self.status = Status.ERROR
-                logger.error(f"Error '{e}' fetching ip...")
+            await self.update_ip_info()
             await asyncio.sleep(self.updating_timeout)
 
-    async def run_iptables_watcher(self) -> None: ...
+    async def run_iptables_watcher(self) -> None:
+        while True:
+            if self.iptables.check_table_changed():
+                logger.info("Iptables changed")
+                await self.update_ip_info()
+            await asyncio.sleep(self.iptables_timeout)
 
     async def run(self) -> None:
         await asyncio.gather(
