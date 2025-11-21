@@ -4,8 +4,9 @@ language: python
 layer: application
 project:
   name: extip
+  description: |
+    Single CLI for external ip service.
 stack: systems
-
 tasks:
   run.dev:
     command: uv run external-ip-service

@@ -1,6 +1,6 @@
 from sys import stdout
 
-from redis_connector import RedisConnector, ApiIPInfoIOLiteMeResponse
+from redis_connector import ApiIPInfoIOLiteMeResponse, RedisConnector
 
 
 def main() -> None:

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+from pathlib import Path
+from typing import Any
+
 import click
 
-from extip.commands.service import service
 from extip.commands.client import client
+from extip.commands.service import service
 
 ENV_VAR_PREFIX = "EXTIP"
 
@@ -16,12 +19,12 @@ ENV_VAR_PREFIX = "EXTIP"
     help="Path to the socket file for client connections",
 )
 @click.pass_context
-def cli(ctx, socket_path):
+def cli(ctx: dict[str, Any], socket_path: str | Path) -> None:
     ctx.ensure_object(dict)
     ctx.obj["SOCKET_PATH"] = socket_path
 
 
-def main():
+def main() -> None:
     cli.add_command(service)
     cli.add_command(client)
     cli(auto_envvar_prefix=ENV_VAR_PREFIX)
