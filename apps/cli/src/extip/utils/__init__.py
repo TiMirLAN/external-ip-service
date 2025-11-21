@@ -1,6 +1,5 @@
-from dataclasses import dataclass
-
 from httpx import AsyncClient, ConnectTimeout, codes
+from pydantic.dataclasses import dataclass
 
 
 @dataclass
