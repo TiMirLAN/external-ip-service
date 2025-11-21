@@ -1,5 +1,7 @@
 import asyncio
+from dataclasses import asdict
 from enum import Enum
+from json import dumps
 from pathlib import Path
 from typing import Any, Optional
 
@@ -26,12 +28,15 @@ class Service:
         self.ipinfo_client = IpInfoClient(token)
         self.status: Status = Status.UPDATING
         self.info: Optional[SimpleIpInfo] = None
+        self.updating_timeout = 5.0
 
     async def client_handler(
         self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
     ) -> None:
-        logger.debug(f"Client connected: {reader.get_extra_info('peername')}")
-        writer.write(r"debug")
+        logger.debug("Client connected")
+        writer.write(
+            dumps(dict(status=self.status.value, info=asdict(self.info))).encode()
+        )
         await writer.drain()
         writer.close()
         await writer.wait_closed()
@@ -49,11 +54,15 @@ class Service:
     async def run_periodic_update(self) -> None:
         while True:
             try:
+                logger.debug("Updating ip...")
                 self.status = Status.UPDATING
                 self.info = await self.ipinfo_client.fetch_simple_data()
                 self.status = Status.READY
-            except (IpInfoClientError, IpInfoClientTimeout):
+                logger.debug(f"IP fetched {self.info.ip} {self.info.as_domain}")
+            except (IpInfoClientError, IpInfoClientTimeout) as e:
                 self.status = Status.ERROR
+                logger.error(f"Error '{e}' fetching ip...")
+            await asyncio.sleep(self.updating_timeout)
 
     async def run_iptables_watcher(self) -> None: ...
 
@@ -80,9 +89,16 @@ class Service:
     default="INFO",
     type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
 )
-@click.option("--token", "-t", type=str, help="The 'ipinfo.com' access token.")
+@click.option(
+    "--token",
+    "-t",
+    type=str,
+    help="The 'ipinfo.com' access token.",
+    envvar="EXTIP_TOKEN",
+)
 @click.pass_context
 def service(ctx: dict[str | Any], log_level: str, token: Optional[str]) -> None:
     """Start the service"""
     # logger.level(log_level)
+    logger.info("Starting service...")
     Service.start(socket_path=ctx.obj["SOCKET_PATH"], token=token)

@@ -80,6 +80,8 @@ dependencies = [
     { name = "click" },
     { name = "httpx" },
     { name = "loguru" },
+    { name = "py-template-engine" },
+    { name = "pydantic" },
     { name = "pydantic-settings" },
 ]
 
@@ -98,6 +100,8 @@ requires-dist = [
     { name = "click", specifier = ">=8.3.1" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "py-template-engine", specifier = ">=0.2.6" },
+    { name = "pydantic", specifier = ">=2.12.4" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
 ]
 
@@ -247,6 +251,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a6/49/7845c2d7bf6474efd8e27905b51b11e6ce411708c91e829b93f324de9929/pre_commit-4.4.0.tar.gz", hash = "sha256:f0233ebab440e9f17cabbb558706eb173d19ace965c68cdce2c081042b4fab15", size = 197501, upload-time = "2025-11-08T21:12:11.607Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/27/11/574fe7d13acf30bfd0a8dd7fa1647040f2b8064f13f43e8c963b1e65093b/pre_commit-4.4.0-py2.py3-none-any.whl", hash = "sha256:b35ea52957cbf83dcc5d8ee636cbead8624e3a15fbfa61a370e42158ac8a5813", size = 226049, upload-time = "2025-11-08T21:12:10.228Z" },
+]
+
+[[package]]
+name = "py-template-engine"
+version = "0.2.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/65/36369a9230234712139aac004325d729ec6f97c7c11ad5d440abe5400a29/py_template_engine-0.2.6.tar.gz", hash = "sha256:5104255123e2076f62c8ce3115ee0db4743577c1c5804549f25efb239aef5422", size = 13501, upload-time = "2025-11-10T10:30:54.008Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/10/9f1e5533343faecc2bfd4c683916eb9cc17f30ab01fc327f4e4038a13e13/py_template_engine-0.2.6-py3-none-any.whl", hash = "sha256:b241e4ef64137157b762500e9fff537b0bef24e59537e5d287cc7c2e9fce038e", size = 12458, upload-time = "2025-11-10T10:30:53.106Z" },
 ]
 
 [[package]]

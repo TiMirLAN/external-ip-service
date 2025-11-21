@@ -23,19 +23,24 @@ class IpInfoClientTimeout(Exception): ...
 
 class IpInfoClient:
     def __init__(self, token: str, timeout: float = 5.0) -> None:
-        self.client = AsyncClient(timeout=timeout)
+        # self.client = AsyncClient(timeout=timeout)
+        self.timeout = timeout
         self.params = dict(token=token)
 
     async def fetch_simple_data(self) -> SimpleIpInfo:
-        async with self.client:
+        async with AsyncClient(timeout=self.timeout) as client:
             try:
-                response = await self.client.get(
+                response = await client.get(
                     "https://api.ipinfo.io/lite/me", params=self.params
                 )
                 if response.status_code != codes.OK:
-                    raise IpInfoClientError()
+                    raise IpInfoClientError(
+                        f"IpInfo response status {response.status_code}"
+                    )
 
                 ip_data: dict[str, str] = response.json()
                 return SimpleIpInfo(**ip_data)
             except ConnectTimeout as e:
-                raise IpInfoClientTimeout from e
+                raise IpInfoClientTimeout(
+                    f"IpInfo connection timeout {self.timeout} failed"
+                ) from e

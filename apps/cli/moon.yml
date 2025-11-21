@@ -8,8 +8,11 @@ project:
     Single CLI for external ip service.
 stack: systems
 tasks:
-  run:
-    command: uv run extip
+  run.service:
+    command: uv run extip service
+
+  run.client:
+    command: uv run extip client
 
   lint:
     command: uv run ruff check --fix

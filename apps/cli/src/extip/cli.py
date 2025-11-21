@@ -7,8 +7,6 @@ import click
 from extip.commands.client import client
 from extip.commands.service import service
 
-ENV_VAR_PREFIX = "EXTIP"
-
 
 @click.group()
 @click.option(
@@ -17,6 +15,7 @@ ENV_VAR_PREFIX = "EXTIP"
     default="/tmp/extip.sock",
     type=click.Path(),
     help="Path to the socket file for client connections",
+    envvar="EXTIP_SOCKET",
 )
 @click.pass_context
 def cli(ctx: dict[str, Any], socket_path: str | Path) -> None:
@@ -27,7 +26,7 @@ def cli(ctx: dict[str, Any], socket_path: str | Path) -> None:
 def main() -> None:
     cli.add_command(service)
     cli.add_command(client)
-    cli(auto_envvar_prefix=ENV_VAR_PREFIX)
+    cli()
 
 
 if __name__ == "__main__":
