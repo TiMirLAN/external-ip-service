@@ -8,8 +8,8 @@ project:
     Single CLI for external ip service.
 stack: systems
 tasks:
-  run.dev:
-    command: uv run external-ip-service
+  run:
+    command: uv run extip
 
   lint:
     command: uv run ruff check --fix
