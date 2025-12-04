@@ -25,3 +25,8 @@ tasks:
 
   build:
     command: uv build
+
+  publish:
+    options:
+      envFile: .env
+    command: uv publish --index devpi-wrkst

@@ -1,0 +1,9 @@
+[[index]]
+name = "devpi-wrks"
+url = "http://devpi.wrkst.home.arpa/root/dev/"
+default = true
+
+# Fallback to PyPI if package not found in devpi
+[[index]]
+name = "pypi"
+url = "https://pypi.org/simple"
