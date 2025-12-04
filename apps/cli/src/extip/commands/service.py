@@ -4,7 +4,7 @@ from typing import Any, Optional
 import click
 from loguru import logger
 
-from extip.services.server_service import Service
+from extip.service import Service
 
 
 @click.command()

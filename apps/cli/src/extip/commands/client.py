@@ -6,7 +6,7 @@ from typing import Any
 import click
 from py_template_engine import TemplateEngine
 
-from extip.services.server_service import ServiceState, Status
+from extip.service import ServiceState, Status
 
 
 async def fetch_info(socket_path: str | Path) -> ServiceState:

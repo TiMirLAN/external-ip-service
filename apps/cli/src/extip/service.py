@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from loguru import Logger
 from pydantic import BaseModel
 
-from extip.services.iptables import IptablesService
+from extip.utils.iptables import IptablesService
 from extip.utils import (
     IpInfoClient,
     IpInfoClientError,
