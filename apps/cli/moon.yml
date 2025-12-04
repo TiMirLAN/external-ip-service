@@ -23,8 +23,16 @@ tasks:
   test:
     command: uv run pytest
 
+  clean.dist:
+    command: rm -rf ./dist/*
+
   build:
+    deps:
+      - clean.dist
     command: uv build
+
+  version:
+    command: uv version
 
   publish:
     options:
