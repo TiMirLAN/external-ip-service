@@ -7,13 +7,13 @@ if TYPE_CHECKING:
     from loguru import Logger
 from pydantic import BaseModel
 
-from extip.utils.iptables import IptablesService
 from extip.utils import (
     IpInfoClient,
     IpInfoClientError,
     IpInfoClientTimeout,
     SimpleIpInfo,
 )
+from extip.utils.iptables import IptablesService
 
 
 class Status(Enum):
