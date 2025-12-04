@@ -37,4 +37,7 @@ tasks:
   publish:
     options:
       envFile: .env
+    deps:
+      - target: build
+        optional: true
     command: uv publish --index devpi-wrkst

@@ -5,7 +5,6 @@
 ### Publishing
 
 ```bash
-moon extip:version -- <version_update>
-moon extip:build
-moon extip:publish
+moon extip:version -- [version_update]
+moon extip:publish --dependants
 ```
