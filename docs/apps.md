@@ -1,9 +1,29 @@
 # Apps
 
-## Service
+## ExtIP (External IP CLI)
 
-Run the development "service".
+### Development
+
+#### Service
+
+Running the service
 
 ```bash
-moon run service:run.dev
+EXTIP_TOKEN='[ipinfo-token]' moon run extip:run.service
+```
+
+#### Client
+
+Running the client
+
+```bash
+moon run extip:run.client
+```
+
+
+### Publishing
+
+```bash
+moon run extip:version -- [version_update]
+moon run extip:publish --dependents
 ```

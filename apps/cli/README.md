@@ -1,10 +1,3 @@
 # ExtIP
 
-## Development
-
-### Publishing
-
-```bash
-moon extip:version -- [version_update]
-moon extip:publish --dependants
-```
+For more information, please visit the [apps documentation](../../docs/apps.md#extip-external-ip-cli).
