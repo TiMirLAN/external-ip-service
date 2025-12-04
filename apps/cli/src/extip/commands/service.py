@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Optional
 
 import click
@@ -23,6 +24,18 @@ from extip.services.server_service import Service
 @click.pass_context
 def service(ctx: dict[str | Any], log_level: str, token: Optional[str]) -> None:
     """Start the service"""
-    # logger.level(log_level)
+    logger.remove()
+    # Send DEBUG, INFO, WARNING to stdout
+    logger.add(
+        sys.stdout,
+        level=log_level,
+        filter=lambda record: record["level"].name in ["DEBUG", "INFO", "WARNING"],
+    )
+    # Send ERROR, CRITICAL to stderr
+    logger.add(
+        sys.stderr,
+        level="ERROR",
+        filter=lambda record: record["level"].name in ["ERROR", "CRITICAL"],
+    )
     logger.info("Starting service...")
-    Service.start(socket_path=ctx.obj["SOCKET_PATH"], token=token)
+    Service.start(socket_path=ctx.obj["SOCKET_PATH"], token=token, logger=logger)
