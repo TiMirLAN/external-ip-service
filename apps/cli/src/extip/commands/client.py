@@ -8,6 +8,8 @@ from py_template_engine import TemplateEngine
 
 from extip.service import ServiceState, Status
 
+DEFAULT_FORMAT = "{{info.asn}} {{info.ip}}"
+
 
 async def fetch_info(socket_path: str | Path) -> ServiceState:
     (reader, *_) = await asyncio.open_unix_connection(path=socket_path)
@@ -17,9 +19,22 @@ async def fetch_info(socket_path: str | Path) -> ServiceState:
 
 @click.command()
 @click.pass_context
-@click.option("--info-format", "-i", default="{{info.asn}} {{info.ip}}")
+@click.option(
+    "--info-format",
+    "-i",
+    default=DEFAULT_FORMAT,
+    help=f"""
+    {
+        ("Specify how you want to display the IP info using placeholders like:")
+    } {{info.<field>}}
+    The default is: "{DEFAULT_FORMAT}"
+    You can use any of these fields: {
+        ", ".join(ServiceState.model_fields["info"].annotation.__annotations__.keys())
+    }
+    """,
+)
 def client(ctx: dict[str | Any], info_format: str) -> None:
-    """Start the client"""
+    """Run the client to get info from socket"""
     try:
         state = asyncio.run(fetch_info(socket_path=ctx.obj["SOCKET_PATH"]))
         if state.status is Status.READY:
