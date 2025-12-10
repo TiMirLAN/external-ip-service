@@ -1,4 +1,4 @@
-from httpx import AsyncClient, ConnectTimeout, codes
+from httpx import AsyncClient, TimeoutException, codes
 from pydantic.dataclasses import dataclass
 
 
@@ -40,7 +40,7 @@ class IpInfoClient:
 
                 ip_data: dict[str, str] = response.json()
                 return SimpleIpInfo(**ip_data)
-            except ConnectTimeout as e:
+            except TimeoutException as e:
                 raise IpInfoClientTimeout(
                     f"IpInfo connection timeout {self.timeout} failed"
                 ) from e
