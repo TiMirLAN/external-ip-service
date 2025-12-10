@@ -124,6 +124,7 @@ dmypy.json
 # Project
 .env
 .gitlab_token
+*.sock
 
 # uv
 .uv/

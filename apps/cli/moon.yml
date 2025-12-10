@@ -9,9 +9,13 @@ project:
 stack: systems
 tasks:
   run.service:
+    options:
+      envFile: .env
     command: uv run extip service
 
   run.client:
+    options:
+      envFile: .env
     command: uv run extip client
 
   lint:

@@ -7,6 +7,7 @@ import click
 from py_template_engine import TemplateEngine
 
 from extip.service import ServiceState, Status
+from extip.utils import SimpleIpInfo
 
 DEFAULT_FORMAT = "{{info.asn}} {{info.ip}}"
 
@@ -28,9 +29,7 @@ async def fetch_info(socket_path: str | Path) -> ServiceState:
         ("Specify how you want to display the IP info using placeholders like:")
     } {{info.<field>}}
     The default is: "{DEFAULT_FORMAT}"
-    You can use any of these fields: {
-        ", ".join(ServiceState.model_fields["info"].annotation.__annotations__.keys())
-    }
+    You can use any of these fields: {", ".join(SimpleIpInfo.__annotations__.keys())}
     """,
 )
 def client(ctx: dict[str | Any], info_format: str) -> None:

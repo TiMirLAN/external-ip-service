@@ -24,7 +24,8 @@ class Status(Enum):
 
 class ServiceState(BaseModel):
     status: Status
-    info: SimpleIpInfo
+    info: Optional[SimpleIpInfo]
+    message: str
 
 
 class Service:
@@ -39,10 +40,12 @@ class Service:
         self.iptables = IptablesService()
         self.iptables_timeout = 2.0
         self.logger = logger
+        self.message = ""
+        self.attempt_number = 0
 
     @property
     def state(self) -> ServiceState:
-        return ServiceState(status=self.status, info=self.info)
+        return ServiceState(status=self.status, info=self.info, message=self.message)
 
     @property
     def state_dict(self) -> dict[str, str | dict[str, str]]:
@@ -73,18 +76,26 @@ class Service:
 
     async def update_ip_info(self) -> None:
         try:
-            self.logger.debug("Updating ip...")
+            self.message = f"Updating... Attempt #{self.attempt_number}"
+            self.logger.debug(f"[{self.attempt_number}] Updating ip...")
             self.status = Status.UPDATING
             self.info = await self.ipinfo_client.fetch_simple_data()
-            self.status = Status.READY
+            self.message = f"Fetched {self.info.ip}"
             self.logger.debug(f"IP fetched {self.info.ip} {self.info.as_domain}")
+            self.status = Status.READY
         except (IpInfoClientError, IpInfoClientTimeout) as e:
-            self.status = Status.ERROR
             self.logger.error(f"Error '{e}' fetching ip...")
+            self.status = Status.ERROR
+            raise e
 
     async def run_periodic_update(self) -> None:
         while True:
-            await self.update_ip_info()
+            self.attempt_number += 1
+            try:
+                await self.update_ip_info()
+                self.attempt_number = 0
+            except (IpInfoClientError, IpInfoClientTimeout) as e:
+                self.message = f"{type(e)}: {e.args[0]}"
             await asyncio.sleep(self.updating_timeout)
 
     async def run_iptables_watcher(self) -> None:
