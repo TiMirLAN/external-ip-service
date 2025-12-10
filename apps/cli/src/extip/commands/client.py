@@ -41,9 +41,9 @@ def client(ctx: dict[str | Any], info_format: str) -> None:
                 TemplateEngine(template_string=info_format).render(**state.model_dump())
             )
         elif state.status is Status.UPDATING:
-            stdout.write("Updating...")
+            stdout.write(state.message)
         elif state.status is Status.ERROR:
-            stdout.write("Service error")
+            stdout.write(f"Error: {state.message}")
     except FileNotFoundError:
         stdout.write("Service is not started")
     except Exception as e:

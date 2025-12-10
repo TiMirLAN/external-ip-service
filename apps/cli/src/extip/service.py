@@ -86,6 +86,7 @@ class Service:
         except (IpInfoClientError, IpInfoClientTimeout) as e:
             self.logger.error(f"Error '{e}' fetching ip...")
             self.status = Status.ERROR
+            self.message = f"{type(e)}: {e.args[0]}"
             raise e
 
     async def run_periodic_update(self) -> None:
@@ -93,10 +94,10 @@ class Service:
             self.attempt_number += 1
             try:
                 await self.update_ip_info()
+                await asyncio.sleep(self.updating_timeout)
                 self.attempt_number = 0
-            except (IpInfoClientError, IpInfoClientTimeout) as e:
-                self.message = f"{type(e)}: {e.args[0]}"
-            await asyncio.sleep(self.updating_timeout)
+            except (IpInfoClientError, IpInfoClientTimeout):
+                await asyncio.sleep(self.updating_timeout)
 
     async def run_iptables_watcher(self) -> None:
         while True:

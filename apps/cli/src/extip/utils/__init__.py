@@ -34,13 +34,9 @@ class IpInfoClient:
                     "https://api.ipinfo.io/lite/me", params=self.params
                 )
                 if response.status_code != codes.OK:
-                    raise IpInfoClientError(
-                        f"IpInfo response status {response.status_code}"
-                    )
+                    raise IpInfoClientError(f"Response status {response.status_code}")
 
                 ip_data: dict[str, str] = response.json()
                 return SimpleIpInfo(**ip_data)
             except TimeoutException as e:
-                raise IpInfoClientTimeout(
-                    f"IpInfo connection timeout {self.timeout} failed"
-                ) from e
+                raise IpInfoClientTimeout(f"Timeout {self.timeout}") from e
